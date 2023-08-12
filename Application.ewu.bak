@@ -1,0 +1,385 @@
+﻿$version 12.05
+
+// This is the root component of the entire GUI application.
+$rect <20,20,220,60>
+$output false
+class Application : Core::Root
+{
+  $rect <830,10,1030,50>
+  inherited property Bounds = <0,0,800,480>;
+
+  // To do:
+  // 
+  // - Adjust the visible size of your application (the thick blue border). It should \
+  // correspond to the size of your target display.
+  // 
+  // - The simplest way to compose the appearance of the application is to use the \
+  // 'Views' and 'Widgets' from the Gallery.
+  // 
+  // - To react to touch or keyboard events use the templates from the Gallery folder \
+  // 'Event Handlers'.
+  // 
+  // - To perform transitions (animations) use the templates from the Gallery folder \
+  // 'Effects'.
+  // 
+  // - To store values use the 'Variable', 'Array' and 'Property' templates available \
+  // in the Gallery folder 'Chora'.
+  // 
+  // - To implement behavior use the 'Method' and 'Slot Method' templates available \
+  // in the Gallery folder 'Chora'.
+  note legend Note1
+  {
+    attr Bounds = <10,510,790,740>;
+  }
+
+  $rect <830,60,1030,100>
+  inherited method Init()
+  {
+    this.PresentDialog( new Application::BootScreen, null, null, null, null, null, null, null, null, false );
+  }
+
+  // Directives to adapt the order of the above members according to how these members 
+  // where arranged when the project content was stored. In this manner the storage 
+  // and the expected order of the members don't depend. Merging of changes in the 
+  // project files is simplified.
+  $member Init
+  $member Bounds
+  $member Note1
+}
+
+// To do:
+// 
+// - Open the 'Application' component for editing. It represents your entire GUI. \
+// Use widgets, views, event handlers and effects from the Gallery to assemble there \
+// your desired GUI look and feel.
+// 
+// - Create your own GUI components, widgets, panels, etc. The Gallery folder 'Component \
+// Templates' contains for this purpose various templates you can simply add to the \
+// unit and thus start your own component development.
+// 
+// - You can add your own bitmap and font resources to the unit. Use the templates \
+// 'Bitmap Resource' and 'Font Resource' from the Gallery folder 'Resources' for \
+// this purpose.
+// 
+// - You can add here also constants to store e.g. multilingual text fragments. Use \
+// for this purpose the template 'Constant' from the Gallery folder 'Chora'.
+// 
+// - To add an interface for communication with the target device use the template \
+// 'Device Interface' from the Gallery folder 'Device'.
+note legend Note1
+{
+  attr Bounds = <550,250,1240,560>;
+}
+
+$rect <240,20,440,60>
+$output false
+class ScreenBase : Core::Group
+{
+  $rect <850,10,1050,50>
+  inherited property Bounds = <0,0,800,480>;
+
+  $rect <20,20,160,60>
+  object Views::Rectangle Rectangle
+  {
+    preset Bounds = <0,0,800,480>;
+    preset Color = #CFE0FFFF;
+  }
+}
+
+$rect <280,60,480,100>
+$output false
+class BootScreen : Application::ScreenBase
+{
+  $rect <20,20,160,60>
+  object WidgetSet::HorizontalValueBar LoaderBar
+  {
+    preset Bounds = <92,215,708,265>;
+    preset Appearance = WidgetSet::HorizontalValueBar_Medium;
+  }
+
+  $rect <811,153,1011,193>
+  object Effects::Int32Effect BootEffect
+  {
+    preset OnFinished = gotoInstructions;
+    preset NoOfCycles = 1;
+    preset CycleDuration = 5000;
+    preset Enabled = true;
+    preset Value2 = 100;
+    preset Outlet = ^LoaderBar.CurrentValue;
+  }
+
+  $rect <810,200,1010,240>
+  slot gotoInstructions
+  {
+    if(Owner != null)
+      Owner.SwitchToDialog(new Application::InstructionsScreen, null, null, null, null, null, null, null, null, null, false);
+  }
+}
+
+$rect <280,100,480,140>
+$output false
+class InstructionsScreen : Application::ScreenBase
+{
+  $rect <20,20,160,60>
+  inherited object Rectangle
+  {
+    preset ColorBL = #B9C9E5FF;
+    preset ColorBR = #B9C9E5FF;
+  }
+
+  $rect <20,20,160,60>
+  object Views::Image Image
+  {
+    preset Bounds = <440,0,800,240>;
+    preset Bitmap = Application::VehicleCharging;
+  }
+
+  $rect <20,20,160,60>
+  object Views::Rectangle Rectangle1
+  {
+    preset Bounds = <-7,240,800,480>;
+    preset Color = #5BD1B9FF;
+  }
+
+  $rect <20,20,160,60>
+  object Views::Text Text
+  {
+    preset Bounds = <0,240,800,480>;
+    preset Padding = 20;
+    preset WrapText = true;
+    preset Alignment = Views::TextAlignment[AlignHorzJustified, AlignVertCenter];
+    preset String = "Per collegare il tuo veicolo elettrico a una stazione di ricarica, assicurati innanzitutto della compatibilità e parcheggia di fronte alla stazione. Apri la porta di ricarica dell'auto, ispeziona il cavo e inserisci il connettore nella presa in modo sicuro fino a sentirne un clic. Avvia il processo di ricarica tramite l'interfaccia della stazione o i comandi del tuo veicolo, monitorando i progressi durante la carica. Quando hai finito, termina la sessione, scollega il cavo e riponilo correttamente. Chiudi la porta di ricarica, effettua eventuali pagamenti necessari e lascia prontamente per liberare la stazione per gli altri utenti.";
+    preset Font = Resources::FontMedium;
+    preset Color = #FFFFFFFF;
+  }
+
+  $rect <20,20,160,60>
+  object Views::Image Image1
+  {
+    preset Bounds = <0,0,467,240>;
+    preset Bitmap = Application::Connector;
+  }
+
+  $rect <20,20,160,60>
+  object WidgetSet::PushButton PushButton
+  {
+    preset Bounds = <644,437,794,474>;
+    preset OnActivate = gotoCharging;
+    preset Label = "Caricare";
+    preset Appearance = WidgetSet::PushButton_Medium;
+  }
+
+  $rect <823,238,1023,278>
+  slot gotoCharging
+  {
+    if(Owner != null)
+      Owner.SwitchToDialog(new Application::ChargingScreen, null, null, null, null, null, null, null, null, null, false);
+  }
+}
+
+$rect <280,140,480,180>
+$output false
+class ChargingScreen : Application::ScreenBase
+{
+  $rect <20,20,160,60>
+  object Views::Image Image
+  {
+    preset Bounds = <0,0,800,480>;
+    preset Bitmap = Application::ChargingImage;
+  }
+
+  $rect <20,20,160,60>
+  object WidgetSet::Gauge Gauge
+  {
+    preset Bounds = <576,165,747,316>;
+    preset Outlet;
+    preset CurrentValue = 0;
+    preset Appearance = WidgetSet::Gauge_Medium;
+  }
+
+  $rect <830,110,1030,150>
+  object Effects::Int32Effect ChargingEffect
+  {
+    preset OnFinished = gotoCharged;
+    preset NoOfCycles = 1;
+    preset CycleDuration = 20000;
+    preset Enabled = true;
+    preset Value2 = 100;
+    preset Outlet = ^Gauge.CurrentValue;
+  }
+
+  $rect <829,164,1029,204>
+  object Effects::Int32Effect ChargingEffect1
+  {
+    preset NoOfCycles = 1;
+    preset CycleDuration = 20000;
+    preset Enabled = true;
+    preset Value2 = 100;
+    preset Outlet = ^ValueDisplay.CurrentValue;
+  }
+
+  $rect <20,20,160,60>
+  object WidgetSet::ValueDisplay ValueDisplay
+  {
+    preset Bounds = <631,230,693,262>;
+    preset Outlet;
+    preset Unit = "";
+    preset Precision = 0;
+    preset Appearance = WidgetSet::ValueDisplay_Medium;
+  }
+
+  $rect <20,20,160,60>
+  object Views::Text Text
+  {
+    preset Bounds = <0,359,800,480>;
+    preset Padding = 20;
+    preset WrapText = true;
+    preset Alignment = Views::TextAlignment[AlignHorzJustified, AlignVertCenter];
+    preset String = "Approfitta di questo momento per rilassarti e ricaricare anche te stesso! Che tu stia leggendo, ascoltando il tuo podcast preferito o semplicemente godendoti l'ambiente circostante, concediti questa piccola pausa. Presto il tuo veicolo sarà completamente carico, e sarai pronto a ripartire con energia rinnovata.";
+    preset Font = Resources::FontMedium;
+  }
+
+  $rect <20,20,160,60>
+  object Views::Text Text1
+  {
+    preset Bounds = <327,22,473,52>;
+    preset String = "Caricando";
+    preset Font = Resources::FontLarge;
+    preset Color = #000000FF;
+  }
+
+  $rect <20,20,160,60>
+  object Views::Line Line
+  {
+    preset Point2 = <473,52>;
+    preset Point1 = <327,52>;
+    preset Width = 3;
+    preset Color = #000000FF;
+  }
+
+  $rect <830,230,1050,270>
+  slot gotoCharged
+  {
+    if(Owner != null)
+      Owner.SwitchToDialog(new Application::ChargedScreen, null, null, null, null, null, null, null, null, null, false);
+  }
+}
+
+$rect <280,180,480,220>
+$output false
+class ChargedScreen : Application::ScreenBase
+{
+  $rect <20,20,160,60>
+  object Views::Rectangle Rectangle2
+  {
+    preset Bounds = <0,355,800,480>;
+    preset Color = #5BD1B9FF;
+  }
+
+  $rect <20,20,160,60>
+  object Views::Text Text
+  {
+    preset Layout = Core::Layout[AlignToLeft, AlignToTop];
+    preset Bounds = <0,355,800,480>;
+    preset Padding = 20;
+    preset WrapText = true;
+    preset Alignment = Views::TextAlignment[AlignHorzJustified, AlignVertCenter];
+    preset String = "Il tuo veicolo è ora completamente carico e pronto a partire. Sentiti libero di scollegare il cavo di ricarica, riporlo in modo sicuro e metterti in viaggio con fiducia. Buon viaggio e ricorda, non hai solo fornito energia al tuo veicolo, ma hai anche contribuito a un ambiente più pulito. Grazie per aver scelto l'energia elettrica!";
+    preset Font = Resources::FontMedium;
+  }
+
+  $rect <20,20,160,60>
+  object Views::Image Image1
+  {
+    preset Bounds = <0,0,640,355>;
+    preset Bitmap = Application::VehicleLeaving;
+  }
+
+  $rect <20,20,160,60>
+  object Views::Rectangle Rectangle1
+  {
+    preset Bounds = <639,0,800,355>;
+  }
+
+  $rect <20,20,160,60>
+  object Views::Image Image
+  {
+    preset Bounds = <665,69,777,285>;
+    preset Bitmap = Application::ChargingComplete;
+  }
+
+  $rect <20,20,160,60>
+  object WidgetSet::PushButton PushButton
+  {
+    preset Bounds = <719,442,800,480>;
+    preset Label = "Stacca";
+    preset Appearance = WidgetSet::PushButton_Medium;
+  }
+
+  $rect <840,170,1040,210>
+  slot gotoInstructions
+  {
+    if(Owner != null)
+      Owner.SwitchToDialog(new Application::InstructionsScreen, null, null, null, null, null, null, null, null, null, false);
+  }
+}
+
+$rect <490,100,690,140>
+$output false
+resource Resources::Bitmap VehicleCharging
+{
+  attr bitmapfile FileName = .\Charging-station-EV.jpg;
+  attr bitmapformat Format = Native;
+  attr framesize FrameSize;
+  attr framedelay FrameDelay;
+  attr bitmapdithering Dithering = Auto;
+  attr bitmapmode Mode = Default;
+}
+
+$rect <690,100,890,140>
+$output false
+resource Resources::Bitmap Connector
+{
+  attr bitmapfile FileName = .\Connector.jpg;
+  attr bitmapformat Format = Native;
+  attr framesize FrameSize;
+  attr framedelay FrameDelay;
+  attr bitmapdithering Dithering = Auto;
+  attr bitmapmode Mode = Default;
+}
+
+$rect <490,140,690,180>
+$output false
+resource Resources::Bitmap ChargingImage
+{
+  attr bitmapfile FileName = .\Charging.jpg;
+  attr bitmapformat Format = Native;
+  attr framesize FrameSize;
+  attr framedelay FrameDelay;
+  attr bitmapdithering Dithering = Auto;
+  attr bitmapmode Mode = Default;
+}
+
+$rect <490,180,690,220>
+$output false
+resource Resources::Bitmap ChargingComplete
+{
+  attr bitmapfile FileName = .\Charging Complete.jpg;
+  attr bitmapformat Format = Native;
+  attr framesize FrameSize;
+  attr framedelay FrameDelay;
+  attr bitmapdithering Dithering = Auto;
+  attr bitmapmode Mode = Default;
+}
+
+$rect <690,180,890,220>
+$output false
+resource Resources::Bitmap VehicleLeaving
+{
+  attr bitmapfile FileName = .\Vehicle Leaving.jpg;
+  attr bitmapformat Format = Native;
+  attr framesize FrameSize;
+  attr framedelay FrameDelay;
+  attr bitmapdithering Dithering = Auto;
+  attr bitmapmode Mode = Default;
+}
